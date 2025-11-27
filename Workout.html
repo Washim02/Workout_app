@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Workout Tracker</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial; }
+        body { background: linear-gradient(135deg, #667eea, #764ba2); color: white; min-height: 100vh; padding: 20px; }
+        .container { max-width: 500px; margin: 0 auto; }
+        header { text-align: center; margin-bottom: 30px; padding: 20px; }
+        h1 { font-size: 2.5rem; margin-bottom: 10px; }
+        .workout-card { background: rgba(255,255,255,0.1); border-radius: 15px; padding: 20px; margin-bottom: 20px; }
+        .counter { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; }
+        .count { font-size: 2.5rem; font-weight: bold; text-align: center; flex: 1; }
+        .btn { background: rgba(255,255,255,0.2); border: none; color: white; width: 50px; height: 50px; border-radius: 50%; font-size: 1.5rem; cursor: pointer; }
+        .timer-controls { display: flex; justify-content: center; gap: 15px; margin-top: 15px; }
+        .timer-btn { padding: 12px 20px; border-radius: 25px; font-size: 1rem; border: none; color: white; cursor: pointer; }
+        .start { background: #4CAF50; } .stop { background: #f44336; } .reset { background: #2196F3; }
+        .workout-summary { background: rgba(255,255,255,0.1); border-radius: 15px; padding: 20px; margin-top: 20px; }
+        .summary-item { display: flex; justify-content: space-between; padding: 10px 0; }
+        .reset-all { width: 100%; padding: 15px; background: #ff4757; border: none; border-radius: 10px; color: white; font-size: 1.1rem; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header><h1>Workout Tracker</h1><p>Track your exercises</p></header>
+        
+        <div class="workout-card"><h3>🔄 Jumping Jacks</h3><div class="counter">
+            <button class="btn" onclick="changeReps('jumpingJacks', -1)">-</button>
+            <div class="count" id="jumpingJacks">0</div>
+            <button class="btn" onclick="changeReps('jumpingJacks', 1)">+</button>
+        </div></div>
+        
+        <div class="workout-card"><h3>💪 Crunches</h3><div class="counter">
+            <button class="btn" onclick="changeReps('crunches', -1)">-</button>
+            <div class="count" id="crunches">0</div>
+            <button class="btn" onclick="changeReps('crunches', 1)">+</button>
+        </div></div>
+        
+        <div class="workout-card"><h3>🦵 Squats</h3><div class="counter">
+            <button class="btn" onclick="changeReps('squats', -1)">-</button>
+            <div class="count" id="squats">0</div>
+            <button class="btn" onclick="changeReps('squats', 1)">+</button>
+        </div></div>
+        
+        <div class="workout-card"><h3>⏱️ Planks</h3><div class="counter">
+            <div class="count" id="planksTimer">00:00</div>
+        </div><div class="timer-controls">
+            <button class="timer-btn start" onclick="startTimer()">Start</button>
+            <button class="timer-btn stop" onclick="stopTimer()">Stop</button>
+            <button class="timer-btn reset" onclick="resetTimer()">Reset</button>
+        </div></div>
+        
+        <div class="workout-card"><h3>⬆️ Push Ups</h3><div class="counter">
+            <button class="btn" onclick="changeReps('pushUps', -1)">-</button>
+            <div class="count" id="pushUps">0</div>
+            <button class="btn" onclick="changeReps('pushUps', 1)">+</button>
+        </div></div>
+        
+        <div class="workout-summary">
+            <h3>Workout Summary</h3>
+            <div class="summary-item"><span>Jumping Jacks:</span><span id="sumJJ">0 reps</span></div>
+            <div class="summary-item"><span>Crunches:</span><span id="sumCr">0 reps</span></div>
+            <div class="summary-item"><span>Squats:</span><span id="sumSq">0 reps</span></div>
+            <div class="summary-item"><span>Planks:</span><span id="sumPl">0 sec</span></div>
+            <div class="summary-item"><span>Push Ups:</span><span id="sumPu">0 reps</span></div>
+            <button class="reset-all" onclick="resetAll()">Reset All</button>
+        </div>
+    </div>
+
+    <script>
+        let timer = null, seconds = 0;
+        function changeReps(exercise, change) {
+            const el = document.getElementById(exercise);
+            let count = parseInt(el.textContent) + change;
+            if (count < 0) count = 0;
+            el.textContent = count;
+            updateSummary();
+        }
+        function startTimer() {
+            if (!timer) {
+                timer = setInterval(() => {
+                    seconds++;
+                    document.getElementById('planksTimer').textContent = 
+                        Math.floor(seconds/60).toString().padStart(2,'0') + ':' + 
+                        (seconds%60).toString().padStart(2,'0');
+                    document.getElementById('sumPl').textContent = seconds + ' sec';
+                }, 1000);
+            }
+        }
+        function stopTimer() { clearInterval(timer); timer = null; }
+        function resetTimer() { stopTimer(); seconds = 0; document.getElementById('planksTimer').textContent = '00:00'; updateSummary(); }
+        function updateSummary() {
+            document.getElementById('sumJJ').textContent = document.getElementById('jumpingJacks').textContent + ' reps';
+            document.getElementById('sumCr').textContent = document.getElementById('crunches').textContent + ' reps';
+            document.getElementById('sumSq').textContent = document.getElementById('squats').textContent + ' reps';
+            document.getElementById('sumPu').textContent = document.getElementById('pushUps').textContent + ' reps';
+        }
+        function resetAll() {
+            document.getElementById('jumpingJacks').textContent = '0';
+            document.getElementById('crunches').textContent = '0';
+            document.getElementById('squats').textContent = '0';
+            document.getElementById('pushUps').textContent = '0';
+            resetTimer();
+            updateSummary();
+        }
+        updateSummary();
+    </script>
+</body>
+</html>
